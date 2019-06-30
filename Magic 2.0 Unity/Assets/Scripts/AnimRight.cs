@@ -16,4 +16,12 @@ public class AnimRight : MonoBehaviour
             gameObject.GetComponent<Animator>().SetBool("FlamethrowerAktive", false);
         }
     }
+
+    public void PlayAnimFeuerball(bool start)
+    {
+        if (start)
+        {
+            gameObject.GetComponent<Animator>().SetTrigger("Feuerball");
+        }
+    }
 }

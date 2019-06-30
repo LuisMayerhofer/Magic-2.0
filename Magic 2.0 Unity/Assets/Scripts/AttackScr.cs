@@ -6,23 +6,30 @@ public class AttackScr : MonoBehaviour
 {
     public GameObject Spell1;
     public GameObject Spell2;
+    public GameObject feuerball;
+
     public GameObject ArmRight;
     public Transform Spawn1;
     public Transform Spawn2;
-    public Transform ParentRotationY;
-    public Transform ParentRotationX;
+    public Transform Spawn3;
+
+    public Camera fpsCam;
     
     public float requiredLoadingTime;
     public float Speed1;
+    public float Speed3;
     public float fireDelay;
+    public float Delay;
    
         
     
 
     private GameObject Spell1Instance;
+    private GameObject feuerballInstance;
     private float LoadingTime = 0;
     private bool Spell1aktive = false;
     private bool Spell2aktive = false;
+
 
     void Awake()
     {
@@ -32,14 +39,16 @@ public class AttackScr : MonoBehaviour
 
     void Update()
     {
+    
         //Spell1
 
         if (Input.GetKeyDown(KeyCode.Mouse0)&& !Spell2aktive)
         {
-            Spell1Instance = Instantiate(Spell1, Spawn1.position, ParentRotationY.rotation);
-            Spell1Instance.transform.SetParent(ParentRotationX);
+            Spell1Instance = Instantiate(Spell1, Spawn1.position, fpsCam.transform.rotation);
+            Spell1Instance.transform.SetParent(fpsCam.transform);
 
-            Spell1aktive = true;
+
+             Spell1aktive = true;
         }
 
         if (Spell1aktive)
@@ -50,7 +59,7 @@ public class AttackScr : MonoBehaviour
             if (LoadingTime >= requiredLoadingTime)
             {
                 Spell1Instance.transform.parent = null;
-                Spell1Instance.GetComponent<Rigidbody>().AddForce(Spawn1.forward * Speed1);
+                Spell1Instance.GetComponent<Rigidbody>().AddForce(fpsCam.transform.forward * Speed1);
             }
             else
                 Destroy(Spell1Instance);
@@ -79,11 +88,33 @@ public class AttackScr : MonoBehaviour
             ArmRight.SendMessageUpwards("PlayAnimFlame", start = false);
         }
 
+        //Spell3
+
+        if(Input.GetKeyDown("e"))
+        {
+            bool start;
+            ArmRight.SendMessageUpwards("PlayAnimFeuerball", start = true);
+            StartCoroutine(FeuerBallDelay());
+        }
+
         
     }
    IEnumerator playFire()
     {
         yield return new WaitForSeconds(fireDelay);
         Spell2.GetComponent<ParticleSystem>().Play();
+    }
+
+    IEnumerator FeuerBallDelay()
+    {
+        yield return new WaitForSeconds(Delay);
+        FeuerBall();
+    }
+
+    void FeuerBall()
+    {
+        feuerballInstance = Instantiate(feuerball, Spawn3.position, fpsCam.transform.rotation);
+
+        feuerballInstance.GetComponent<Rigidbody>().AddForce(fpsCam.transform.forward * Speed3);
     }
 }
